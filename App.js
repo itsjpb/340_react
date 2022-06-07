@@ -6,40 +6,63 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import type {Node} from 'react';
 import {
   StyleSheet,
   Text,
   useColorScheme,
   View,
-  FlatList
+  FlatList,
+    TouchableOpacity,
+    Button
 } from 'react-native';
 
 import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+const Stack = createNativeStackNavigator();
 
 const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+    const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darkPrimary : Colors.primary,
-  };
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.light : Colors.lighter,
+    };
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+               <Stack.Screen component={Home} name={"Home"}
+                             options={{headerShown : false}}/>
+                <Stack.Screen component={Contacts} name={"Contacts"}/>
 
-  return (
+            </Stack.Navigator>
+        </NavigationContainer>
+    )
+}
+
+const Home = ({navigation}) => {
+    const isDarkMode = useColorScheme() === 'dark';
+
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.light : Colors.lighter,
+    };
+    return (
 
       <View
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Text style={[
-            styles.myHeading,
-          {color: isDarkMode ? Colors.light: Colors.black},
-        ]}>
+        <Text style={[styles.myHeading]}>
           Jason's Practice App</Text>
         <Text style={[styles.appDescription,
           {color: isDarkMode ? Colors.light: Colors.black}]}>This is my little react app for AD340. Below is a list of movies
         I like to watch while doing homework, because they are pretty</Text>
+          <Button
+              title = "Go to contacts"
+              onPress={() => navigation.navigate('Contacts')}
+          />
         <FlatList
             style={styles.item}
             data={[
@@ -58,9 +81,73 @@ const App: () => Node = () => {
         />
 
       </View>
-
   );
 };
+
+const Contacts = () => {
+    const isDarkMode = useColorScheme() === 'dark';
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.light : Colors.lighter};
+    const [contacts, setContacts] = useState([]);
+
+    useEffect(() => {
+        console.log("usefeect");
+        fetch('https://fakerapi.it/api/v1/users?_quantity=10')
+        .then((response) => response.json())
+        .then((json) => {
+            setContacts(json.data);
+            console.log(contacts);
+            console.log(json.data);
+            })
+        .catch((error) => {
+            console.error(error);
+        });
+    }, []);
+
+    return (
+        <View>
+            <FlatList
+                style={styles.item}
+                data={[
+                    {key: 'Parasite'},
+                    {key: 'Children of Men'},
+                    {key: 'Memories of Murder'},
+                    {key: '2001: A space Odyssey'},
+                    {key: 'Akira'},
+                    {key: '7 Samurai'},
+                    {key: 'Cure'},
+                    {key: 'Mad Max: Fury Road'},
+                    {key: 'Midsommar'}
+                ]}
+                renderItem={({item}) => <TouchableOpacity>
+                    <View>
+                    <Text style={[styles.item,
+                    {color: isDarkMode ? Colors.light: Colors.black},]}>{item.key}</Text>
+                    </View>
+                </TouchableOpacity>}
+            />
+
+        </View>
+
+    );
+
+}
+
+const ContactDetail = () => {
+    const isDarkMode = useColorScheme() === 'dark';
+
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.light : Colors.lighter,
+    };
+    return (
+        <View
+            contentInsetAdjustmentBehavior="automatic"
+            style={backgroundStyle}>
+
+        </View>
+    );
+
+}
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -71,7 +158,9 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+      backgroundColor: Colors.darkPrimary,
+      color: Colors.light
   },
   sectionTitle: {
     fontSize: 24,
