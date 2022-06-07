@@ -86,43 +86,32 @@ const Home = ({navigation}) => {
 
 const Contacts = () => {
     const isDarkMode = useColorScheme() === 'dark';
-    const backgroundStyle = {
-        backgroundColor: isDarkMode ? Colors.light : Colors.lighter};
-    const [contacts, setContacts] = useState([]);
+    let [contacts, setContacts] = useState([]);
 
     useEffect(() => {
         console.log("usefeect");
         fetch('https://fakerapi.it/api/v1/users?_quantity=10')
         .then((response) => response.json())
         .then((json) => {
+            contacts = json.data;
+            //console.log(contacts);
             setContacts(json.data);
-            console.log(contacts);
-            console.log(json.data);
             })
         .catch((error) => {
             console.error(error);
         });
     }, []);
+    console.log(contacts);
 
-    return (
+   return (
         <View>
             <FlatList
                 style={styles.item}
-                data={[
-                    {key: 'Parasite'},
-                    {key: 'Children of Men'},
-                    {key: 'Memories of Murder'},
-                    {key: '2001: A space Odyssey'},
-                    {key: 'Akira'},
-                    {key: '7 Samurai'},
-                    {key: 'Cure'},
-                    {key: 'Mad Max: Fury Road'},
-                    {key: 'Midsommar'}
-                ]}
-                renderItem={({item}) => <TouchableOpacity>
+                data={contacts}
+                renderItem={({contact}) => <TouchableOpacity>
                     <View>
                     <Text style={[styles.item,
-                    {color: isDarkMode ? Colors.light: Colors.black},]}>{item.key}</Text>
+                    {color: isDarkMode ? Colors.light: Colors.black},]}>{contact.firstname}</Text>
                     </View>
                 </TouchableOpacity>}
             />
