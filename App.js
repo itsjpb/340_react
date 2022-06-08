@@ -220,7 +220,9 @@ const styles = StyleSheet.create({
     contactPhoto: {
       width: 150,
         height: 150,
-        resizeMode: 'cover'
+        resizeMode: 'cover',
+        borderRadius: 10,
+        marginLeft: 1
     }
 
 });
