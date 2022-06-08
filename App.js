@@ -15,7 +15,8 @@ import {
   View,
   FlatList,
     TouchableOpacity,
-    Button
+    Button,
+    Image
 } from 'react-native';
 
 import {
@@ -37,6 +38,7 @@ const App: () => Node = () => {
                <Stack.Screen component={Home} name={"Home"}
                              options={{headerShown : false}}/>
                 <Stack.Screen component={Contacts} name={"Contacts"}/>
+                <Stack.Screen component={ContactDetail} name={"Contact Detail"}/>
 
             </Stack.Navigator>
         </NavigationContainer>
@@ -57,12 +59,12 @@ const Home = ({navigation}) => {
         <Text style={[styles.myHeading]}>
           Jason's Practice App</Text>
         <Text style={[styles.appDescription,
-          {color: isDarkMode ? Colors.light: Colors.black}]}>This is my little react app for AD340. Below is a list of movies
-        I like to watch while doing homework, because they are pretty</Text>
+          {color: isDarkMode ? Colors.light: Colors.black}]}>This is my little react app for AD340.</Text>
           <Button
               title = "Go to contacts"
               onPress={() => navigation.navigate('Contacts')}
           />
+          <Text style={styles.movieHeader}>Study Movies</Text>
         <FlatList
             style={styles.item}
             data={[
@@ -84,13 +86,13 @@ const Home = ({navigation}) => {
   );
 };
 
-const Contacts = () => {
+const Contacts = ({navigation}) => {
     const isDarkMode = useColorScheme() === 'dark';
     let [contacts, setContacts] = useState([]);
 
     useEffect(() => {
         console.log("usefeect");
-        fetch('https://fakerapi.it/api/v1/users?_quantity=10')
+        fetch('https://fakerapi.it/api/v1/users?_quantity=40')
         .then((response) => response.json())
         .then((json) => {
             contacts = json.data;
@@ -106,12 +108,11 @@ const Contacts = () => {
    return (
         <View>
             <FlatList
-                style={styles.item}
                 data={contacts}
-                renderItem={({contact}) => <TouchableOpacity>
+                renderItem={({item}) => <TouchableOpacity
+                    onPress={() => navigation.navigate('Contact Detail', item)}>
                     <View>
-                    <Text style={[styles.item,
-                    {color: isDarkMode ? Colors.light: Colors.black},]}>{contact.firstname}</Text>
+                    <Text style={styles.contact}>{item.firstname + " " + item.lastname}</Text>
                     </View>
                 </TouchableOpacity>}
             />
@@ -122,16 +123,28 @@ const Contacts = () => {
 
 }
 
-const ContactDetail = () => {
+const ContactDetail = ({navigation, route}) => {
     const isDarkMode = useColorScheme() === 'dark';
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.light : Colors.lighter,
     };
     return (
-        <View
-            contentInsetAdjustmentBehavior="automatic"
-            style={backgroundStyle}>
+        <View>
+            <Image
+                style={styles.contactPhoto}
+                source={{
+                    uri: route.params.image,
+                }}
+            />
+            <Text style ={styles.infoHeader}>{"name: "}</Text>
+            <Text style ={styles.info}>{route.params.firstname + " " + route.params.lastname}</Text>
+            <Text style ={styles.infoHeader}>{"username: "}</Text>
+            <Text  style ={styles.info}>{route.params.username}</Text>
+            <Text style ={styles.infoHeader}>{"email address: "}</Text>
+            <Text style ={styles.info}>{route.params.email}</Text>
+            <Text style ={styles.infoHeader}>{"website: "}</Text>
+            <Text style ={styles.info}>{route.params.website}</Text>
 
         </View>
     );
@@ -168,13 +181,48 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
-  item: {
-    fontSize: 16,
-    margin: 2,
+  contact: {
+    fontSize: 24,
     fontWeight: '500',
+      margin: 1,
+      borderWidth: 1.5,
+      padding: 3,
+      borderColor: Colors.darker,
+      borderRadius: 2,
+      backgroundColor: Colors.primary
+  },
+    item: {
+        fontSize: 24,
+        fontWeight: '500',
+        margin: 1,
+        marginLeft: 10
+    },
+    infoHeader: {
+        fontSize: 14,
+        paddingLeft: 10,
+        fontWeight: '500',
+        marginTop:4,
 
+    },
+    info: {
+        fontSize: 22,
+        fontWeight: '500',
+        paddingLeft: 10,
+        borderBottomWidth: 1
+    },
+    movieHeader: {
+        fontSize: 24,
+        color: 'black',
+        fontWeight: '500',
+        marginBottom: 2,
+        marginTop: 5
+    },
+    contactPhoto: {
+      width: 150,
+        height: 150,
+        resizeMode: 'cover'
+    }
 
-  }
 });
 
 export default App;
