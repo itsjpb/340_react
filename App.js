@@ -134,7 +134,7 @@ const ContactDetail = ({navigation, route}) => {
             <Image
                 style={styles.contactPhoto}
                 source={{
-                    uri: route.params.image,
+                    uri: route.params.image + route.params.id,
                 }}
             />
             <Text style ={styles.infoHeader}>{"name: "}</Text>
